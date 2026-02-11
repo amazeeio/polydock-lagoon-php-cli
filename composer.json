@@ -17,7 +17,7 @@
     ],
     "require": {
         "php": "^8.2.0",
-        "freedomtech-hosting/ft-lagoon-php": "@dev",
+        "freedomtech-hosting/ft-lagoon-php": "^0.0.5",
         "laravel-zero/framework": "^11.0.0"
     },
     "require-dev": {
@@ -47,11 +47,5 @@
     },
     "minimum-stability": "stable",
     "prefer-stable": true,
-    "bin": ["ft-lagoon"],
-    "repositories": [
-      {
-        "type": "path",
-        "url": "/home/bryan/Projects/FT/ft-lagoon-php"
-      }
-    ]
+    "bin": ["ft-lagoon"]
 }
