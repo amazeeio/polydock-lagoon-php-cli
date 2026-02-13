@@ -1,4 +1,9 @@
-<?php namespace App\Commands;
+<?php
+
+namespace App\Commands;
+
+use FreedomtechHosting\FtLagoonPhp\LagoonClientInitializeRequiredToInteractException;
+use FreedomtechHosting\FtLagoonPhp\LagoonClientTokenRequiredToInitializeException;
 
 class ListAllProjectVariablesCommand extends LagoonCommandBase
 {
@@ -18,19 +23,22 @@ class ListAllProjectVariablesCommand extends LagoonCommandBase
 
     /**
      * Execute the console command.
+     *
+     * @throws LagoonClientTokenRequiredToInitializeException|LagoonClientInitializeRequiredToInteractException
      */
-    public function handle()
+    public function handle(): int
     {
-        $identity_file = $this->option("identity_file");
+        $identity_file = $this->option('identity_file');
         $this->initLagoonClient($identity_file);
 
         $project = $this->option('project');
 
         if (empty($project)) {
             $this->error('Project is required');
+
             return 1;
         }
-        
+
         $projectVariables = $this->LagoonClient->getProjectVariablesByName($project);
 
         $tableData = [];
@@ -39,11 +47,11 @@ class ListAllProjectVariablesCommand extends LagoonCommandBase
                 $key,
                 $variable['value'],
                 $variable['scope'],
-                ''
+                '',
             ];
         }
 
-        $this->info("Project-level variables:");
+        $this->info('Project-level variables:');
         $headers = ['Name', 'Value', 'Scope', 'Environment'];
         $this->table($headers, $tableData);
         $this->line('');
@@ -56,18 +64,18 @@ class ListAllProjectVariablesCommand extends LagoonCommandBase
                 foreach ($environment['envVariables'] as $variable) {
                     $tableData[] = [
                         $variable['name'],
-                        $variable['value'], 
+                        $variable['value'],
                         $variable['scope'],
-                        $envName
+                        $envName,
                     ];
                 }
 
                 $this->info("Variables for environment '$envName':");
-                $headers = ['Name', 'Value', 'Scope', 'Environment'];
                 $this->table($headers, $tableData);
                 $this->line('');
             }
         }
 
+        return 0;
     }
 }

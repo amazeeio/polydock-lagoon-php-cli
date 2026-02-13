@@ -1,4 +1,9 @@
-<?php namespace App\Commands;
+<?php
+
+namespace App\Commands;
+
+use FreedomtechHosting\FtLagoonPhp\LagoonClientInitializeRequiredToInteractException;
+use FreedomtechHosting\FtLagoonPhp\LagoonClientTokenRequiredToInitializeException;
 
 class LoginCommand extends LagoonCommandBase
 {
@@ -18,21 +23,23 @@ class LoginCommand extends LagoonCommandBase
 
     /**
      * Execute the console command.
+     *
+     * @throws LagoonClientTokenRequiredToInitializeException|LagoonClientInitializeRequiredToInteractException
      */
-    public function handle()
+    public function handle(): void
     {
-        $identity_file = $this->option("identity_file");
-        $this->info("Using identity file: " . $identity_file);
+        $identity_file = $this->option('identity_file');
+        $this->info('Using identity file: '.$identity_file);
 
         $this->initLagoonClient($identity_file);
 
         $data = $this->LagoonClient->whoAmI();
-        
+
         $this->table(
             [],
             [
                 ['Lagoon Version', $data['lagoonVersion']],
-                ['Email', $data['me']['email']]
+                ['Email', $data['me']['email']],
             ]
         );
     }

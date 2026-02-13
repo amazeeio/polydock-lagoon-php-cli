@@ -1,4 +1,9 @@
-<?php namespace App\Commands;
+<?php
+
+namespace App\Commands;
+
+use FreedomtechHosting\FtLagoonPhp\LagoonClientInitializeRequiredToInteractException;
+use FreedomtechHosting\FtLagoonPhp\LagoonClientTokenRequiredToInitializeException;
 
 class GetProjectEnvironmentDeploymentCommand extends LagoonCommandBase
 {
@@ -18,10 +23,12 @@ class GetProjectEnvironmentDeploymentCommand extends LagoonCommandBase
 
     /**
      * Execute the console command.
+     *
+     * @throws LagoonClientTokenRequiredToInitializeException|LagoonClientInitializeRequiredToInteractException
      */
-    public function handle()
+    public function handle(): int
     {
-        $identity_file = $this->option("identity_file");
+        $identity_file = $this->option('identity_file');
 
         $this->initLagoonClient($identity_file);
 
@@ -29,6 +36,7 @@ class GetProjectEnvironmentDeploymentCommand extends LagoonCommandBase
 
         if (empty($project)) {
             $this->error('Project is required');
+
             return 1;
         }
 
@@ -36,6 +44,7 @@ class GetProjectEnvironmentDeploymentCommand extends LagoonCommandBase
 
         if (empty($environment)) {
             $this->error('Environment is required');
+
             return 1;
         }
 
@@ -43,12 +52,14 @@ class GetProjectEnvironmentDeploymentCommand extends LagoonCommandBase
 
         if (empty($deploymentName)) {
             $this->error('Deployment name is required');
+
             return 1;
         }
 
         $project = $this->LagoonClient->getProjectByName($project);
-        if (!isset($project['projectByName']['id'])) {
+        if (! isset($project['projectByName']['id'])) {
             $this->error('Project not found');
+
             return 1;
         }
 
@@ -57,6 +68,7 @@ class GetProjectEnvironmentDeploymentCommand extends LagoonCommandBase
 
         if (isset($deployment['error'])) {
             $this->error($deployment['error']);
+
             return 1;
         }
 
@@ -69,13 +81,15 @@ class GetProjectEnvironmentDeploymentCommand extends LagoonCommandBase
                 $deployment['buildStep'] ?? '',
                 $deployment['status'],
                 $deployment['started'] ?? '',
-                $deployment['completed'] ?? ''
-            ]
+                $deployment['completed'] ?? '',
+            ],
         ];
 
         $this->table(
             ['Environment', 'ID', 'Name', 'Priority', 'Build Step', 'Status', 'Started', 'Completed'],
             $tableData
         );
+
+        return 0;
     }
 }

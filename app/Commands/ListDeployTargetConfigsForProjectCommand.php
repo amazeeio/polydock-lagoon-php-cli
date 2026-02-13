@@ -1,6 +1,9 @@
-<?php namespace App\Commands;
+<?php
 
-use Illuminate\Console\Command;
+namespace App\Commands;
+
+use FreedomtechHosting\FtLagoonPhp\LagoonClientInitializeRequiredToInteractException;
+use FreedomtechHosting\FtLagoonPhp\LagoonClientTokenRequiredToInitializeException;
 
 class ListDeployTargetConfigsForProjectCommand extends LagoonCommandBase
 {
@@ -20,31 +23,36 @@ class ListDeployTargetConfigsForProjectCommand extends LagoonCommandBase
 
     /**
      * Execute the console command.
+     *
+     * @throws LagoonClientTokenRequiredToInitializeException|LagoonClientInitializeRequiredToInteractException
      */
-    public function handle()
+    public function handle(): int
     {
-        $identity_file = $this->option("identity_file");
+        $identity_file = $this->option('identity_file');
 
         $this->initLagoonClient($identity_file);
 
         $projectName = $this->option('project');
         if (empty($projectName)) {
             $this->error('Project name is required');
+
             return 1;
         }
 
         $project = $this->LagoonClient->getProjectByName($projectName);
         $projectId = empty($project['projectByName']) || empty($project['projectByName']['id']) ? null : $project['projectByName']['id'];
 
-        if(empty($projectId)) {
-            $this->error('Project not found: ' . $projectName);
+        if (empty($projectId)) {
+            $this->error('Project not found: '.$projectName);
+
             return 1;
         }
 
         $deployTargetConfigs = $this->LagoonClient->getProjectDeployTargetsByProjectId($projectId);
 
         if (empty($deployTargetConfigs['deployTargetConfigsByProjectId'])) {
-            $this->info('No deploy target configs found for project: ' . $projectName);
+            $this->info('No deploy target configs found for project: '.$projectName);
+
             return 0;
         }
 
@@ -55,24 +63,26 @@ class ListDeployTargetConfigsForProjectCommand extends LagoonCommandBase
                 'Branches' => $config['branches'],
                 'Pull Requests' => $config['pullrequests'] ?: '',
                 'Weight' => $config['weight'] ?: '',
-                'Deploy Target' => $config['deployTarget']['name'] . " (" . $config['deployTarget']['id'] . ")",
+                'Deploy Target' => $config['deployTarget']['name'].' ('.$config['deployTarget']['id'].')',
                 'Friendly Name' => $config['deployTarget']['friendlyName'] ?: 'N/A',
                 'Cloud Region' => $config['deployTarget']['cloudRegion'] ?: 'N/A',
-                'Cloud Provider' => $config['deployTarget']['cloudProvider'] ?: 'N/A',                
+                'Cloud Provider' => $config['deployTarget']['cloudProvider'] ?: 'N/A',
             ];
         }
 
         $this->table([
             'ID',
-            'Branches', 
+            'Branches',
             'Pull Requests',
             'Weight',
             'Deploy Target',
             'Friendly Name',
             'Cloud Region',
-            'Cloud Provider'
+            'Cloud Provider',
         ], $tableData);
 
-        $this->info('Found ' . count($tableData) . ' deploy target config(s) for project: ' . $projectName);
+        $this->info('Found '.count($tableData).' deploy target config(s) for project: '.$projectName);
+
+        return 0;
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Commands;
 
-use Illuminate\Console\Scheduling\Schedule;
-use LaravelZero\Framework\Commands\Command;
+use FreedomtechHosting\FtLagoonPhp\LagoonClientInitializeRequiredToInteractException;
+use FreedomtechHosting\FtLagoonPhp\LagoonClientTokenRequiredToInitializeException;
 
 class DeployProjectEnvironmentCommand extends LagoonCommandBase
 {
@@ -23,31 +23,37 @@ class DeployProjectEnvironmentCommand extends LagoonCommandBase
 
     /**
      * Execute the console command.
+     *
+     * @throws LagoonClientTokenRequiredToInitializeException|LagoonClientInitializeRequiredToInteractException
      */
-    public function handle()
+    public function handle(): int
     {
-        $identity_file = $this->option("identity_file");
+        $identity_file = $this->option('identity_file');
         $this->initLagoonClient($identity_file);
 
         $project = $this->option('project');
         if (empty($project)) {
             $this->error('Project is required');
+
             return 1;
         }
 
         $environment = $this->option('environment');
         if (empty($environment)) {
             $this->error('Environment is required');
+
             return 1;
         }
-
 
         $data = $this->LagoonClient->deployProjectEnvironmentByName($project, $environment);
         if (isset($data['error'])) {
             $this->error($data['error'][0]['message']);
+
             return 1;
         }
 
-        $this->info("Deployment initiated with build ID: " . $data['deployEnvironmentBranch']);
+        $this->info('Deployment initiated with build ID: '.$data['deployEnvironmentBranch']);
+
+        return 0;
     }
 }

@@ -1,4 +1,9 @@
-<?php namespace App\Commands;
+<?php
+
+namespace App\Commands;
+
+use FreedomtechHosting\FtLagoonPhp\LagoonClientInitializeRequiredToInteractException;
+use FreedomtechHosting\FtLagoonPhp\LagoonClientTokenRequiredToInitializeException;
 
 class ListProjectVariablesCommand extends LagoonCommandBase
 {
@@ -18,15 +23,18 @@ class ListProjectVariablesCommand extends LagoonCommandBase
 
     /**
      * Execute the console command.
+     *
+     * @throws LagoonClientTokenRequiredToInitializeException|LagoonClientInitializeRequiredToInteractException
      */
-    public function handle()
+    public function handle(): int
     {
-        $identity_file = $this->option("identity_file");
+        $identity_file = $this->option('identity_file');
 
         $project = $this->option('project');
 
         if (empty($project)) {
             $this->error('Project is required');
+
             return 1;
         }
 
@@ -34,14 +42,15 @@ class ListProjectVariablesCommand extends LagoonCommandBase
 
         $this->initLagoonClient($identity_file);
 
-        if($environment) {
+        if ($environment) {
             $data = $this->LagoonClient->getProjectVariablesByNameForEnvironment($project, $environment);
         } else {
             $data = $this->LagoonClient->getProjectVariablesByName($project);
         }
-        
+
         if (isset($data['error'])) {
             $this->error($data['error'][0]['message']);
+
             return 1;
         }
 
@@ -51,7 +60,7 @@ class ListProjectVariablesCommand extends LagoonCommandBase
                 $key,
                 $variable['value'],
                 $variable['scope'],
-                $environment
+                $environment,
             ];
         }
 
@@ -64,5 +73,6 @@ class ListProjectVariablesCommand extends LagoonCommandBase
 
         $this->table($headers, $tableData);
 
+        return 0;
     }
 }

@@ -1,4 +1,9 @@
-<?php namespace App\Commands;
+<?php
+
+namespace App\Commands;
+
+use FreedomtechHosting\FtLagoonPhp\LagoonClientInitializeRequiredToInteractException;
+use FreedomtechHosting\FtLagoonPhp\LagoonClientTokenRequiredToInitializeException;
 
 class DeleteDeployTargetConfigCommand extends LagoonCommandBase
 {
@@ -18,29 +23,34 @@ class DeleteDeployTargetConfigCommand extends LagoonCommandBase
 
     /**
      * Execute the console command.
+     *
+     * @throws LagoonClientTokenRequiredToInitializeException|LagoonClientInitializeRequiredToInteractException
      */
-    public function handle()
+    public function handle(): int
     {
-        $identity_file = $this->option("identity_file");
+        $identity_file = $this->option('identity_file');
 
         $this->initLagoonClient($identity_file);
 
         $deployTargetConfigId = $this->option('deployTargetConfigId');
         if (empty($deployTargetConfigId)) {
             $this->error('Deploy target config ID is required');
+
             return 1;
         }
 
         $deployTargetConfig = $this->LagoonClient->getProjectDeployTargetByConfigId($deployTargetConfigId);
 
-        if(empty($deployTargetConfig) || empty($deployTargetConfig['deployTargetConfigById']['id'])) {
-            $this->error('Deploy target config not found: ' . $deployTargetConfigId);
+        if (empty($deployTargetConfig) || empty($deployTargetConfig['deployTargetConfigById']['id'])) {
+            $this->error('Deploy target config not found: '.$deployTargetConfigId);
+
             return 1;
         }
 
         $projectName = $this->option('project');
         if (empty($projectName)) {
             $this->error('Project name is required');
+
             return 1;
         }
 
@@ -48,18 +58,22 @@ class DeleteDeployTargetConfigCommand extends LagoonCommandBase
 
         $projectId = empty($project['projectByName']) || empty($project['projectByName']['id']) ? null : $project['projectByName']['id'];
 
-        if(empty($projectId)) {
-            $this->error('Project not found: ' . $projectName);
+        if (empty($projectId)) {
+            $this->error('Project not found: '.$projectName);
+
             return 1;
         }
 
-        $data = $this->LagoonClient->deleteProjectDeployTargetByConfigId($deployTargetConfigId,  $projectId);
-        
+        $data = $this->LagoonClient->deleteProjectDeployTargetByConfigId($deployTargetConfigId, $projectId);
+
         if (isset($data['error'])) {
             $this->error($data['error'][0]['message']);
+
             return 1;
         }
 
         print_r($data);
+
+        return 0;
     }
 }

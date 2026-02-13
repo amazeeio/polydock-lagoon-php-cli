@@ -1,4 +1,9 @@
-<?php namespace App\Commands;
+<?php
+
+namespace App\Commands;
+
+use FreedomtechHosting\FtLagoonPhp\LagoonClientInitializeRequiredToInteractException;
+use FreedomtechHosting\FtLagoonPhp\LagoonClientTokenRequiredToInitializeException;
 
 class GetProjectCommand extends LagoonCommandBase
 {
@@ -18,10 +23,12 @@ class GetProjectCommand extends LagoonCommandBase
 
     /**
      * Execute the console command.
+     *
+     * @throws LagoonClientTokenRequiredToInitializeException|LagoonClientInitializeRequiredToInteractException
      */
-    public function handle()
+    public function handle(): int
     {
-        $identity_file = $this->option("identity_file");
+        $identity_file = $this->option('identity_file');
 
         $this->initLagoonClient($identity_file);
 
@@ -29,6 +36,7 @@ class GetProjectCommand extends LagoonCommandBase
 
         if (empty($project)) {
             $this->error('Project is required');
+
             return 1;
         }
 
@@ -36,13 +44,14 @@ class GetProjectCommand extends LagoonCommandBase
 
         if (isset($project['error'])) {
             $this->error($project['error'][0]['message']);
+
             return 1;
         }
 
         $projectData = $project['projectByName'];
         $projectOutput = [
             'id' => $projectData['id'],
-            'name' => $projectData['name'], 
+            'name' => $projectData['name'],
             'productionEnvironment' => $projectData['productionEnvironment'] ?? null,
             'branches' => $projectData['branches'] ?? null,
             'gitUrl' => $projectData['gitUrl'] ?? null,
@@ -51,12 +60,14 @@ class GetProjectCommand extends LagoonCommandBase
             'openshift_cloudProvider' => isset($projectData['openshift']) ? ($projectData['openshift']['cloudProvider'] ?? null) : null,
             'openshift_cloudRegion' => isset($projectData['openshift']) ? ($projectData['openshift']['cloudRegion'] ?? null) : null,
             'created' => $projectData['created'] ?? null,
-            'availability' => $project['availability'] ?? null
+            'availability' => $project['availability'] ?? null,
         ];
 
         $this->table(
             ['ID', 'Name', 'Production Environment', 'Branches', 'Git URL', 'ID', 'Cluster', 'Cloud Provider', 'Cloud Region', 'Created', 'Availability'],
             [$projectOutput]
         );
+
+        return 0;
     }
 }

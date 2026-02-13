@@ -1,4 +1,9 @@
-<?php namespace App\Commands;
+<?php
+
+namespace App\Commands;
+
+use FreedomtechHosting\FtLagoonPhp\LagoonClientInitializeRequiredToInteractException;
+use FreedomtechHosting\FtLagoonPhp\LagoonClientTokenRequiredToInitializeException;
 
 class ListProjectsCommand extends LagoonCommandBase
 {
@@ -18,17 +23,20 @@ class ListProjectsCommand extends LagoonCommandBase
 
     /**
      * Execute the console command.
+     *
+     * @throws LagoonClientTokenRequiredToInitializeException|LagoonClientInitializeRequiredToInteractException
      */
-    public function handle()
+    public function handle(): int
     {
-        $identity_file = $this->option("identity_file");
+        $identity_file = $this->option('identity_file');
 
         $this->initLagoonClient($identity_file);
 
         $data = $this->LagoonClient->getAllProjects();
-        
+
         if (isset($data['error'])) {
             $this->error($data['error'][0]['message']);
+
             return 1;
         }
 
@@ -36,7 +44,7 @@ class ListProjectsCommand extends LagoonCommandBase
         foreach ($data['allProjects'] as $project) {
             $tableData[] = [
                 $project['id'],
-                $project['name'], 
+                $project['name'],
                 $project['productionEnvironment'],
                 $project['branches'],
                 $project['gitUrl'],
@@ -44,7 +52,7 @@ class ListProjectsCommand extends LagoonCommandBase
                 $project['openshift']['cloudProvider'],
                 $project['openshift']['cloudRegion'],
                 $project['created'],
-                $project['availability']
+                $project['availability'],
             ];
         }
 
@@ -52,5 +60,7 @@ class ListProjectsCommand extends LagoonCommandBase
             ['ID', 'Name', 'Prod Env', 'Branches', 'Git URL', 'Cluster', 'Cloud Provider', 'Region', 'Created', 'Availability'],
             $tableData
         );
+
+        return 0;
     }
 }

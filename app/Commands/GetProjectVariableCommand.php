@@ -1,4 +1,6 @@
-<?php namespace App\Commands;
+<?php
+
+namespace App\Commands;
 
 class GetProjectVariableCommand extends LagoonCommandBase
 {
@@ -19,9 +21,9 @@ class GetProjectVariableCommand extends LagoonCommandBase
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
-        $identity_file = $this->option("identity_file");
+        $identity_file = $this->option('identity_file');
 
         $this->initLagoonClient($identity_file);
 
@@ -29,6 +31,7 @@ class GetProjectVariableCommand extends LagoonCommandBase
 
         if (empty($project)) {
             $this->error('Project is required');
+
             return 1;
         }
 
@@ -38,10 +41,11 @@ class GetProjectVariableCommand extends LagoonCommandBase
 
         if (empty($key)) {
             $this->error('Variable name (Key) is required');
+
             return 1;
         }
 
-        if($environment) {
+        if ($environment) {
             $variableData = $this->LagoonClient->getProjectVariableByNameForEnvironment($project, $environment, $key);
         } else {
             $variableData = $this->LagoonClient->getProjectVariableByName($project, $key);
@@ -49,6 +53,7 @@ class GetProjectVariableCommand extends LagoonCommandBase
 
         if (! isset($variableData['value'])) {
             $this->error('Variable not found');
+
             return 1;
         }
 
@@ -57,12 +62,14 @@ class GetProjectVariableCommand extends LagoonCommandBase
                 $key,
                 $variableData['value'],
                 $variableData['scope'],
-                $environment
-            ]
+                $environment,
+            ],
         ];
 
         $headers = ['Name', 'Value', 'Scope', 'Environment'];
 
         $this->table($headers, $tableData);
+
+        return 0;
     }
 }
