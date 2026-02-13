@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "39a112e2b8669ccadee230be83ec776b",
+    "content-hash": "552d6ec956955fafdc88fdc23574ca5a",
     "packages": [
         {
             "name": "brick/math",
@@ -362,16 +362,16 @@
         },
         {
             "name": "freedomtech-hosting/ft-lagoon-php",
-            "version": "v0.0.5",
+            "version": "v0.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amazeeio/polydock-lagoon-php-lib.git",
-                "reference": "e8669ab79091eade0444a1fe7bcf96ed243b8ea4"
+                "reference": "7a2a21d957396a56b0b353109cbb719d4d458964"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-lagoon-php-lib/zipball/e8669ab79091eade0444a1fe7bcf96ed243b8ea4",
-                "reference": "e8669ab79091eade0444a1fe7bcf96ed243b8ea4",
+                "url": "https://api.github.com/repos/amazeeio/polydock-lagoon-php-lib/zipball/7a2a21d957396a56b0b353109cbb719d4d458964",
+                "reference": "7a2a21d957396a56b0b353109cbb719d4d458964",
                 "shasum": ""
             },
             "require": {
@@ -398,9 +398,9 @@
             "description": "The Freedom Tech Lagoon PHP library",
             "support": {
                 "issues": "https://github.com/amazeeio/polydock-lagoon-php-lib/issues",
-                "source": "https://github.com/amazeeio/polydock-lagoon-php-lib/tree/v0.0.5"
+                "source": "https://github.com/amazeeio/polydock-lagoon-php-lib/tree/v0.0.9"
             },
-            "time": "2025-04-22T03:56:15+00:00"
+            "time": "2026-02-13T01:08:37+00:00"
         },
         {
             "name": "graham-campbell/result-type",

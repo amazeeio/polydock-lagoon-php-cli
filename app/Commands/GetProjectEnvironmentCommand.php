@@ -4,7 +4,7 @@ namespace App\Commands;
 
 use FreedomtechHosting\FtLagoonPhp\LagoonClientTokenRequiredToInitializeException;
 
-class GetProjectEnvironmentDeploymentCommand extends LagoonCommandBase
+class GetProjectEnvironmentCommand extends LagoonCommandBase
 {
     /**
      * The name and signature of the console command.
