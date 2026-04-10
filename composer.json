@@ -23,7 +23,7 @@
     ],
     "require": {
         "php": "^8.2.0",
-        "freedomtech-hosting/ft-lagoon-php": "^0.0.16",
+        "freedomtech-hosting/ft-lagoon-php": "^0.1",
         "laravel-zero/framework": "^12.0.5"
     },
     "require-dev": {
